@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  testapp:
+    container_name: testapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: thebernank/testapp:latest
