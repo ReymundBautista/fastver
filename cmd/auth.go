@@ -21,7 +21,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		verifyAuth("FASTLY_API_TOKEN")
+		verifyAuth(apiTokenEnvName)
 	},
 }
 
@@ -47,7 +47,6 @@ func verifyAuth(envName string) {
 	} else {
 		fmt.Println("FASTLY_API_TOKEN environment variable must be set!")
 	}
-
 }
 
 func newFastlyClient(envVarName string) *fastly.Client {
@@ -61,12 +60,12 @@ func newFastlyClient(envVarName string) *fastly.Client {
 }
 
 // Interface that has the same GetCurrentUser() signature from fastly.Client
-type fastlyClient interface {
+type fastlyClientAuth interface {
 	GetCurrentUser() (*fastly.User, error)
 }
 
 // Accepts the client parameter using the fastlyClient interface type
-func getCurrentUser(client fastlyClient) (*fastly.User, error) {
+func getCurrentUser(client fastlyClientAuth) (*fastly.User, error) {
 	user, err := client.GetCurrentUser()
 	if err != nil {
 		log.Fatalf("Authorization failed. Please verify your Fastly API Key.: %v", err)
