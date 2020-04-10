@@ -1,8 +1,8 @@
 version: '3.7'
 services:
-  testapp:
-    container_name: testapp
+  fastver:
+    container_name: fastver
     build:
       context: .
       dockerfile: Dockerfile
-    image: thebernank/testapp:latest
+    image: thebernank/fastver:latest
