@@ -21,7 +21,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		verifyAuth("FASTLY_API_TOKEN")
+		verifyAuth(apiTokenEnvName)
 	},
 }
 
@@ -47,7 +47,6 @@ func verifyAuth(envName string) {
 	} else {
 		fmt.Println("FASTLY_API_TOKEN environment variable must be set!")
 	}
-
 }
 
 func newFastlyClient(envVarName string) *fastly.Client {

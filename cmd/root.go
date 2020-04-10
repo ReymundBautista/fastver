@@ -77,3 +77,6 @@ func initConfig() {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
+
+/* #nosec */
+const apiTokenEnvName = "FASTLY_API_TOKEN"
