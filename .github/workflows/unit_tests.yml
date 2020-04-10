@@ -17,5 +17,5 @@ jobs:
       with:
         go-version: '^1.13.1'
 
-    - name: Run Unit Tests
-      run: go test -v
+    - name: Run Command Unit Tests
+      run: cd cmd; go test -v
