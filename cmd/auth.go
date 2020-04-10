@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/fastly/go-fastly/fastly"
 	"github.com/reymundbautista/fastver/getenv"
@@ -19,7 +21,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		verifyAuth()
+		verifyAuth("FASTLY_API_TOKEN")
 	},
 }
 
@@ -37,26 +39,39 @@ func init() {
 	// authCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func verifyAuth() {
-	var envName = "FASTLY_API_TOKEN"
-
+func verifyAuth(envName string) {
 	if getenv.Exists(envName) {
-		token := getenv.ReadEnvVar(envName)
-		client, err := fastly.NewClient(token)
-		if err != nil {
-			fmt.Println("Client creation failed.")
-			return
-		}
-		// Get information about the current user
-		user, err := client.GetCurrentUser()
-		if err != nil {
-			fmt.Println("Authorization failed. Please verify your Fastly API Key.")
-			return
-		}
-
+		client := newFastlyClient(envName)
+		user, _ := getCurrentUser(client)
 		fmt.Println("Authorization succeeded for user: " + user.Login)
 	} else {
 		fmt.Println("FASTLY_API_TOKEN environment variable must be set!")
 	}
 
+}
+
+func newFastlyClient(envVarName string) *fastly.Client {
+	token := getenv.ReadEnvVar(envVarName)
+	client, err := fastly.NewClient(token)
+	if err != nil {
+		log.Fatalf("Fastly client creation failed: %v", err)
+		os.Exit(1)
+	}
+	return client
+}
+
+// Interface that has the same GetCurrentUser() signature from fastly.Client
+type fastlyClient interface {
+	GetCurrentUser() (*fastly.User, error)
+}
+
+// Accepts the client parameter using the fastlyClient interface type
+func getCurrentUser(client fastlyClient) (*fastly.User, error) {
+	user, err := client.GetCurrentUser()
+	if err != nil {
+		log.Fatalf("Authorization failed. Please verify your Fastly API Key.: %v", err)
+		os.Exit(1)
+	}
+
+	return user, err
 }
