@@ -23,14 +23,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if getenv.Exists(apiTokenEnvName) {
 			client := newFastlyClient(apiTokenEnvName)
-			var i *fastly.ListServicesInput
-			services, err := client.ListServices(i)
-
-			if err != nil {
-				log.Fatalf("Listing services failed: %v", err)
-				os.Exit(1)
-			}
-
+			services, _ := listServices(client)
 			for _, service := range services {
 				fmt.Println(service.Name)
 			}
@@ -53,4 +46,21 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+// Interface that has the same GetCurrentUser() signature from fastly.Client
+type fastlyClientSerivces interface {
+	ListServices(i *fastly.ListServicesInput) ([]*fastly.Service, error)
+}
+
+// Accepts the client parameter using the fastlyClient interface type
+func listServices(client fastlyClientSerivces) ([]*fastly.Service, error) {
+	var i *fastly.ListServicesInput
+	services, err := client.ListServices(i)
+	if err != nil {
+		log.Fatalf("Listing services failed: %v", err)
+		os.Exit(1)
+	}
+
+	return services, err
 }
