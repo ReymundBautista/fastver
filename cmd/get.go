@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/fastly/go-fastly/fastly"
+	aurora "github.com/logrusorgru/aurora"
 	"github.com/reymundbautista/fastver/getenv"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +40,11 @@ var getCmd = &cobra.Command{
 
 			for _, v := range versions {
 				fmt.Println("Version: " + strconv.Itoa(v.Number))
-				fmt.Println("Active: " + strconv.FormatBool(v.Active))
+				if v.Active {
+					fmt.Println(aurora.Sprintf("%s", aurora.Green("Active: "+strconv.FormatBool(v.Active))))
+				} else {
+					fmt.Println("Active: " + strconv.FormatBool(v.Active))
+				}
 				fmt.Println("")
 			}
 
