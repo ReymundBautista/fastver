@@ -16,10 +16,9 @@ var id string
 var limit int
 
 // getCmd represents the get command
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Get service versions",
-	Long:  ``,
+var listverCmd = &cobra.Command{
+	Use:   "listver",
+	Short: "list service versions",
 	Run: func(cmd *cobra.Command, args []string) {
 		if getenv.Exists(apiTokenEnvName) {
 			client := newFastlyClient(apiTokenEnvName)
@@ -41,7 +40,7 @@ var getCmd = &cobra.Command{
 			for _, v := range versions {
 				fmt.Println("Version: " + strconv.Itoa(v.Number))
 				if v.Active {
-					fmt.Println(aurora.Sprintf("%s", aurora.Green("Active: "+strconv.FormatBool(v.Active))))
+					fmt.Println(aurora.Sprintf("%s", aurora.Bold(aurora.Green("Active: "+strconv.FormatBool(v.Active)))))
 				} else {
 					fmt.Println("Active: " + strconv.FormatBool(v.Active))
 				}
@@ -55,10 +54,10 @@ var getCmd = &cobra.Command{
 }
 
 func init() {
-	servicesCmd.AddCommand(getCmd)
-	getCmd.Flags().StringVarP(&id, "id", "i", "", "Fastly service ID")
-	getCmd.Flags().IntVarP(&limit, "limit", "l", 10, "Number of previous versions (default = 10")
-	getCmd.MarkFlagRequired("id")
+	servicesCmd.AddCommand(listverCmd)
+	listverCmd.Flags().StringVarP(&id, "id", "i", "", "Fastly service ID")
+	listverCmd.Flags().IntVarP(&limit, "limit", "l", 10, "Limit number of previous versions (default = 10")
+	listverCmd.MarkFlagRequired("id")
 }
 
 // Interface that has the same GetServices() signature from fastly.Client
